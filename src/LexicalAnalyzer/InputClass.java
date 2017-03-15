@@ -12,7 +12,7 @@ public class InputClass {
 		this.inputFile = inputFile;
 	}
 	
-	private String[] readFile() throws IOException{
+	public String[] readFile() throws IOException{
 		FileReader fileReader = null;
 		BufferedReader bufferedReader = null;
 		String outputString = "";
