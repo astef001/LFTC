@@ -9,14 +9,15 @@ public class AtomMap {
 	public AtomMap(){
 		atoms.put("int", "INT");
 		atoms.put("char", "CHAR");
-		atoms.put("=", "ASSIGN");
 		atoms.put("==", "EQUALS");
+		atoms.put("=", "ASSIGN");
 		atoms.put(";", "SEMICOLON");
 		atoms.put("(", "LPAR");
 		atoms.put(",", "COMMA");
 		atoms.put(")", "RPAR");
 		atoms.put("{", "LACC");
 		atoms.put("}", "RACC");
+		atoms.put(" ", " ");
 	}
 	public Set<String> getKeySet(){
 		return atoms.keySet();

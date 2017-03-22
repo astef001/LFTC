@@ -3,6 +3,8 @@ package LexicalAnalyzer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class AtomGenerator {
 	
@@ -17,19 +19,28 @@ public class AtomGenerator {
 		Iterator<String> argArrayStringIterator = argArrayString.iterator();
 		Iterator<String> mapIterator = mapKeys.iterator();
 		String result = new String();
-		String regex,currentEl;
+		String regex,currentEl,tempString;
+		Matcher m;
+		Pattern p = null;
 		while (argArrayStringIterator.hasNext()) {
 			currentEl=argArrayStringIterator.next();
-			while(mapIterator.hasNext()){
-				regex=mapIterator.next();
-				if(currentEl.matches(regex)){
-					result +=" "+atomMap.getAtom(regex);
-					break;
+			m=p.matcher(currentEl);
+			while(currentEl!=""){
+				while(mapIterator.hasNext()){
+					regex="^"+mapIterator.next();
+					p=Pattern.compile(regex);
+					m=p.matcher(currentEl);
+					if(m.find()){
+						result +=" "+atomMap.getAtom(regex);
+						tempString=currentEl.substring(0, m.end());
+						currentEl = currentEl.substring(m.end());
+						break;
+					}
 				}
-			}
 			if(!mapIterator.hasNext()){
 				result += " ID";
 			}
+		}
 		}
 		return result;
 	}
