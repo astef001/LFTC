@@ -4,18 +4,20 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class InputClass {
 	private String inputFile;
-
+	private ArrayList<String> outputList;
 	public InputClass(String inputFile) {
 		this.inputFile = inputFile;
+		this.outputList = new ArrayList<String>();
+		
 	}
 	
-	public String[] readFile() throws IOException{
+	private void readFile() throws IOException{
 		FileReader fileReader = null;
 		BufferedReader bufferedReader = null;
-		String outputString = "";
 		try {
 			fileReader = new FileReader(this.inputFile);
 		    bufferedReader = new BufferedReader(fileReader, 50000);
@@ -24,15 +26,23 @@ public class InputClass {
 		} catch(@SuppressWarnings("hiding") IOException ex){
 			ex.printStackTrace();
 		}
-		
 		if(bufferedReader.ready()){
 			String tmpString = "";
-			while((tmpString = bufferedReader.readLine()) != ""){
-				outputString += " " + tmpString;
+			while((tmpString = bufferedReader.readLine()) != null){
+				outputList.add(tmpString);
 			}
-		}
+		}	
 		bufferedReader.close();
-		return outputString.split("\".+\" | \\s+");
+	}
+	
+	public ArrayList<String> getList(){
+		try {
+			this.readFile();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return this.outputList;
 	}
 }
 
