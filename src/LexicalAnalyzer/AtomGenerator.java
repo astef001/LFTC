@@ -10,56 +10,60 @@ public class AtomGenerator {
 	
 	private final AtomMap atomMap = new AtomMap();
 	private Set<String> mapKeys=atomMap.getKeySet();
-			
+	private ArrayList<Atom> generatedAtoms;
 	public AtomGenerator(){
-		
 	}
 	
-	private String addSpace(String result){
-		if(result.length()>0 && !result.substring(result.length()-1).matches("[ \n]+")){
-			result +=" ";
+	public ArrayList<Atom> getAtoms(){
+		return this.generatedAtoms;
+	}
+	
+	public String getAtomsString(){
+		
+		Iterator<Atom> generatedAtomsIterator = generatedAtoms.iterator();
+		String result=new String("");
+		Atom currentAtom;
+		int line=0;
+		while(generatedAtomsIterator.hasNext()){
+			currentAtom=generatedAtomsIterator.next();
+			if (line!=currentAtom.getLine()){
+				result+="\n";
+				line=currentAtom.getLine();
+			}
+			result += currentAtom.toString()+" ";
 		}
+		result=result.replaceAll("[ \t]+"," ");
 		return result;
 	}
 	
-	public String returnAtoms(ArrayList<String> argArrayString){
+	public void generateAtoms(ArrayList<String> argArrayString){
 		Iterator<String> argArrayStringIterator = argArrayString.iterator();
 		Iterator<String> mapIterator = mapKeys.iterator();
-		String result = new String("");
+		ArrayList<Atom> generatedAtoms=new ArrayList<Atom>(); 
 		String regex,currentEl,tempString;
 		Matcher m;
 		Pattern p = null;
 		while (argArrayStringIterator.hasNext()) {
 			currentEl=argArrayStringIterator.next();
+			int line=argArrayString.indexOf(currentEl);
 			while(currentEl.length()>0){
+				currentEl=atomMap.removeIgnored(currentEl);
 				mapIterator = mapKeys.iterator();
 				while(mapIterator.hasNext()){
 					regex=mapIterator.next();
 					p=Pattern.compile("^"+regex);
 					m=p.matcher(currentEl);
 					if(m.find()){
-						result = addSpace(result);
-						result +=atomMap.getAtom(regex);
+						tempString=currentEl.substring(0, m.end());
+						generatedAtoms.add(new Atom(tempString,atomMap.getAtomId(regex), line));
 						currentEl = currentEl.substring(m.end());
 						break;
 					}
 				}
-			if(!mapIterator.hasNext()){
-				Pattern idRegex=Pattern.compile("^[a-zA-Z_][a-zA-Z0-9_]*");
-				Matcher idMatcher=idRegex.matcher(currentEl);
-				if(idMatcher.find()){
-					tempString=currentEl.substring(0, idMatcher.end());
-					result = addSpace(result);
-					result += "ID:"+ tempString;
-					currentEl = currentEl.substring(idMatcher.end());
-				}
 			}
-			
-		}
-			result += "\n";
+//			generatedAtoms.add(new Atom("newline","\n",line));
  		}
-		result=result.replaceAll("[ \t]+"," ");
-		result+="END";
-		return result;
+		generatedAtoms.add(new Atom("END", "", argArrayString.size()));
+		this.generatedAtoms=generatedAtoms;
 	}
 }

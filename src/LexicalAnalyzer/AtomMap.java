@@ -1,10 +1,15 @@
 package LexicalAnalyzer;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class AtomMap {
 	private LinkedHashMap<String, String> atoms = new LinkedHashMap<String, String>();
+	private ArrayList<String> ignored = new ArrayList<String>();
 	public AtomMap(){
 		atoms.put("int", "INT");
 		atoms.put("char", "CHAR");
@@ -41,15 +46,33 @@ public class AtomMap {
 		atoms.put("<","LESS");
 		atoms.put(">","GREATER") ;
 		atoms.put("[ \t]", " ");
-		atoms.put("[0-9]+('.'[0-9]+('e'|'E')('-'|'+')?[0-9]+?|('.'[0-9]+)?('e'|'E')('-'|'+')?[0-9]+)('e'|'E')('-'|'+')?[0-9]+", "CT_REAL");
-		atoms.put("[1-9][0-9]*|0[0-7]*|0x[0-9a-fA-F]+", "CT_INT");
+		atoms.put("[0-9]+((\\.[0-9]+(e|E)(-|\\+)?[0-9]+?)|([0-9]+)?((e|E)(-|\\+)?[0-9]+))", "CT_REAL");
+		atoms.put("(0x[0-9a-fA-F]+)|([1-9][0-9]*|0[0-7]*)", "CT_INT");
 		atoms.put("[\"]([abfnrtv'?\\\\\"\\\\0]|[^\"\\\\])*[\"]", "CT_STRING");		
-		atoms.put("[']([abfnrtv'?\\\\\"\\\\0]|[^'\\\\])[']", "CT_CHAR");
+		atoms.put("['](\\\\[abfnrtv'?\\\\\"\\\\0]|[^'\\\\])[']", "CT_CHAR");
+		atoms.put("[a-zA-Z_][a-zA-Z0-9_]*","ID");
+		
+		ignored.add("[ \n\r\t]+");
+		ignored.add("//[^\n\r\0]*");
+		ignored.add("/\\*([^*]|\\*+[^*/])*\\*/");
+	}
+	public String removeIgnored(String el){
+		Iterator<String> ignoredIterator= ignored.iterator();
+		while(ignoredIterator.hasNext()){
+			String currentEl=ignoredIterator.next();
+			Pattern p=Pattern.compile("^"+currentEl);
+			Matcher m=p.matcher(el);
+			if(m.find()){
+				el=el.substring(m.end());
+				return el;
+			}
+		}
+		return el;
 	}
 	public Set<String> getKeySet(){
 		return atoms.keySet();
 	}
-	public String getAtom(String arg){
+	public String getAtomId(String arg){
 		return atoms.get(arg);
 	}
 }
