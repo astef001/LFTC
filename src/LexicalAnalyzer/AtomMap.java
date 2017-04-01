@@ -46,7 +46,8 @@ public class AtomMap {
 		atoms.put("<","LESS");
 		atoms.put(">","GREATER") ;
 		atoms.put("[ \t]", " ");
-		atoms.put("[0-9]+((\\.[0-9]+(e|E)(-|\\+)?[0-9]+?)|([0-9]+)?((e|E)(-|\\+)?[0-9]+))", "CT_REAL");
+		/* escaped the DOT (.) because it was considered any character before (0x2 was considered a real) */
+		atoms.put("[0-9]+(\\.[0-9]+((e|E)(-|\\+)?[0-9]+)?|(\\.[0-9]+)?(e|E)(-|\\+)?[0-9]+)", "CT_REAL");
 		atoms.put("(0x[0-9a-fA-F]+)|([1-9][0-9]*|0[0-7]*)", "CT_INT");
 		atoms.put("[\"]([abfnrtv'?\\\\\"\\\\0]|[^\"\\\\])*[\"]", "CT_STRING");		
 		atoms.put("['](\\\\[abfnrtv'?\\\\\"\\\\0]|[^'\\\\])[']", "CT_CHAR");
