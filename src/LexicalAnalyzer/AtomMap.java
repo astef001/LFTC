@@ -11,17 +11,17 @@ public class AtomMap {
 	private LinkedHashMap<String, String> atoms = new LinkedHashMap<String, String>();
 	private ArrayList<String> ignored = new ArrayList<String>();
 	public AtomMap(){
-		atoms.put("int", "INT");
-		atoms.put("char", "CHAR");
-		atoms.put("break", "BREAK");
-		atoms.put("double","DOUBLE");
-		atoms.put("else", "ELSE");
-		atoms.put("for", "FOR");
-		atoms.put("if", "IF");
-		atoms.put("return", "RETURN");
-		atoms.put("struct", "STRUCT");
-		atoms.put("void", "VOID");
-		atoms.put("while", "WHILE");
+		atoms.put("int[^a-zA-Z0-9_]", "INT");
+		atoms.put("char[^a-zA-Z0-9_]", "CHAR");
+		atoms.put("break[^a-zA-Z0-9_]", "BREAK");
+		atoms.put("double[^a-zA-Z0-9_]","DOUBLE");
+		atoms.put("else[^a-zA-Z0-9_]", "ELSE");
+		atoms.put("for[^a-zA-Z0-9_]", "FOR");
+		atoms.put("if[^a-zA-Z0-9_]", "IF");
+		atoms.put("return[^a-zA-Z0-9_]", "RETURN");
+		atoms.put("struct[^a-zA-Z0-9_]", "STRUCT");
+		atoms.put("void[^a-zA-Z0-9_]", "VOID");
+		atoms.put("while[^a-zA-Z0-9_]", "WHILE");
 		atoms.put(">=", "GREATEREQ");
 		atoms.put("<=", "LESSEQ");
 		atoms.put("!=","NOTEQ");
