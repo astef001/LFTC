@@ -3,7 +3,6 @@ package LexicalAnalyzer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringEscapeUtils;
-import java.lang.Float;
 
 public class Atom {
 	private String value;
@@ -64,7 +63,7 @@ public class Atom {
 					this.value = this.value.substring(m.start() + 1, m.end() - 1);
 				return this.id+':' + StringEscapeUtils.unescapeJava(this.value);
 			default:
-				return "";
+				return this.id + ":" + this.value;
 			}
 		}
 		else{

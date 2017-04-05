@@ -24,17 +24,16 @@ public class AtomGenerator {
 		String result=new String("");
 		Atom currentAtom;
 		int line=0;
-		result+="@Line:" + (line + 1) + " "; //hardcoded to make the @Line work
+		//result+="@Line:" + (line + 1) + " "; //hardcoded to make the @Line work
 		while(generatedAtomsIterator.hasNext()){
 			currentAtom=generatedAtomsIterator.next();
 			if (line!=currentAtom.getLine()){
 				//removed result += "\n" (proful a zis sa fie doar un rand intreg).
-				result+=" @Line:" + (line + 2) + " "; //hardcoded to make the @Line work
+				//result+=" @Line:" + (line + 2) + " "; //hardcoded to make the @Line work
 				line=currentAtom.getLine();
 			}
 			result += currentAtom.toString()+" ";
 		}
-		result=result.replaceAll("[ \t]+"," ");
 		return result;
 	}
 	
@@ -65,7 +64,7 @@ public class AtomGenerator {
 			}
 //			generatedAtoms.add(new Atom("newline","\n",line));
  		}
-		generatedAtoms.add(new Atom("END", "", argArrayString.size()));
+		generatedAtoms.add(new Atom("END", "END", argArrayString.size()));
 		this.generatedAtoms=generatedAtoms;
 	}
 }
