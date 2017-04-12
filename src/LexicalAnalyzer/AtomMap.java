@@ -12,7 +12,7 @@ public class AtomMap {
 	private ArrayList<String> ignored = new ArrayList<String>();
 	public AtomMap(){
 		atoms.put("int[^a-zA-Z0-9_]", "INT");
-		atoms.put("char[^a-zA-Z0-9_]", "CHAR");
+		atoms.put("char[^a-zA-Z0-9_]", "CHAR");		
 		atoms.put("break[^a-zA-Z0-9_]", "BREAK");
 		atoms.put("double[^a-zA-Z0-9_]","DOUBLE");
 		atoms.put("else[^a-zA-Z0-9_]", "ELSE");
