@@ -1,6 +1,14 @@
 package SintacticAnalyzer;
 
+import java.util.ArrayList;
+
+import LexicalAnalyzer.Atom;
+
 public class SintacticMap implements SintaticMapInterface{
+	private ArrayList<Atom> atomList;
+	public SintacticMap(ArrayList<Atom> arg){
+		atomList=arg;
+	}
 
 	@Override
 	public boolean doUnit() {
@@ -16,13 +24,29 @@ public class SintacticMap implements SintaticMapInterface{
 
 	@Override
 	public boolean doDeclVar() {
-		// TODO Auto-generated method stub
+		if(this.doTypeBase()){
+			if(this.consume("ID")==true){
+				this.doArrayDecl();
+				while(this.consume("COMMA")){
+					if(this.consume("ID")){
+						this.doArrayDecl();
+					}else err("missing id after ,");
+				}
+				if(this.consume("SEMICOLON")){
+					return true;
+				}else err
+			}
+		}
 		return false;
 	}
 
 	@Override
 	public boolean doTypeBase() {
-		// TODO Auto-generated method stub
+		if(this.consume("INT") || this.consume("DOUBLE") || this.consume("CHAR") || this.consume("STRUCT")){
+			if(this.consume("ID")){
+				return true;
+			}
+		}
 		return false;
 	}
 
@@ -40,7 +64,7 @@ public class SintacticMap implements SintaticMapInterface{
 
 	@Override
 	public boolean doDeclFunc() {
-		// TODO Auto-generated method stub
+		
 		return false;
 	}
 
@@ -58,19 +82,25 @@ public class SintacticMap implements SintaticMapInterface{
 
 	@Override
 	public boolean doStmCompound() {
-		// TODO Auto-generated method stub
+		if(this.consume("LACC")){
+			while(this.doDeclVar() || this.doStm());
+			if(this.consume("RACC")){
+				return true;
+			}
+		}
 		return false;
 	}
 
 	@Override
 	public boolean doExpr() {
-		// TODO Auto-generated method stub
+		if(this.doExprAssign()){
+			return true;
+		}
 		return false;
 	}
 
 	@Override
 	public boolean doExprAssign() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -127,10 +157,21 @@ public class SintacticMap implements SintaticMapInterface{
 		// TODO Auto-generated method stub
 		return false;
 	}
-
+	exprPrimary: ID ( LPAR ( expr ( COMMA expr )* )? RPAR )?
+	           | CT_INT
+	           | CT_REAL 
+	           | CT_CHAR 
+	           | CT_STRING 
+	           | LPAR expr RPAR ;
 	@Override
 	public boolean doExprPrimary() {
-		// TODO Auto-generated method stub
+		if(this.consume("ID")){
+			if()
+			this.consume("LPAR");
+			this.doExpr();
+			while(this.consume("COMMA") && this.doExpr());
+			this.consume("RPAR");
+		}
 		return false;
 	}
 
