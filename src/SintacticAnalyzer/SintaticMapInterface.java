@@ -23,6 +23,6 @@ public interface SintaticMapInterface {
 	boolean doExprUnary();
 	boolean doExprPostifx();
 	boolean doExprPrimary();
-	boolean consume();
+	boolean consume(String argToFind);
 	void errorPrint();
 }

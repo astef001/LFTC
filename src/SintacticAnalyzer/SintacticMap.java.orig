@@ -61,11 +61,14 @@ public class SintacticMap implements SintaticMapInterface{
 
 	@Override
 	public boolean doTypeBase() {
+<<<<<<< HEAD
 		if(this.consume("INT") || this.consume("DOUBLE") || this.consume("CHAR") || this.consume("STRUCT")){
 			if(this.consume("ID")){
 				return true;
 			}
 		}
+=======
+>>>>>>> 7c7908a4bba57638d7fb49216c44beca47ad6c5e
 		return false;
 	}
 
@@ -91,6 +94,9 @@ public class SintacticMap implements SintaticMapInterface{
 
 	@Override
 	public boolean doDeclFunc() {
+<<<<<<< HEAD
+		
+=======
 		if(true == this.doTypeBase()){
 			this.consume("MUL");
 		}
@@ -118,6 +124,7 @@ public class SintacticMap implements SintaticMapInterface{
 				}
 			}
 		}
+>>>>>>> 7c7908a4bba57638d7fb49216c44beca47ad6c5e
 		return false;
 	}
 
