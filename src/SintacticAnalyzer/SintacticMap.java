@@ -1,18 +1,41 @@
 package SintacticAnalyzer;
 
+import java.util.ArrayList;
+
+import LexicalAnalyzer.Atom;
+
 public class SintacticMap implements SintaticMapInterface{
 
+	private ArrayList<Atom> atomList;
+	
+	public SintacticMap(ArrayList<Atom> arg){
+		this.atomList = arg;
+	}
+	
 	@Override
 	public boolean doUnit() {
-		// TODO Auto-generated method stub
+		while(true == this.doDeclStruct() || true == this.doDeclFunc() || true == this.doDeclVar());
+			if(this.consume("END")){
+				return false;
+			}
 		return false;
 	}
 
 	@Override
 	public boolean doDeclStruct() {
-		// TODO Auto-generated method stub
-		return false;
-	}
+		if(true == this.consume("STRUCT")){
+			if(true == this.consume("ID")){
+				if(true == this.consume("LACC")){
+					while(this.doDeclVar() == true);
+						if(true == this.consume("RACC")){
+							if(true == this.consume("SEMICOLON"))
+								return true;
+						}
+					}
+			}
+		}
+	return false;
+}
 
 	@Override
 	public boolean doDeclVar() {
@@ -22,31 +45,69 @@ public class SintacticMap implements SintaticMapInterface{
 
 	@Override
 	public boolean doTypeBase() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean doArrayDecl() {
-		// TODO Auto-generated method stub
+		if(true == this.consume("LBRACKET")){
+			this.doExpr();
+				if(true == this.consume("RBRACKET")){
+					return true;
+				}
+		}
 		return false;
 	}
 
 	@Override
 	public boolean doTypeName() {
-		// TODO Auto-generated method stub
+		if(this.doTypeBase() == true){
+			this.doArrayDecl();
+				return true;
+		}
 		return false;
 	}
 
 	@Override
 	public boolean doDeclFunc() {
-		// TODO Auto-generated method stub
+		if(true == this.doTypeBase()){
+			this.consume("MUL");
+		}
+		else{
+			if(true == this.consume("VOID")){
+				
+			}
+			else return false;
+		}
+		
+		if(true == this.consume("ID")){
+			if(true == this.consume("LPAR")){
+				this.doFuncArg();
+				while(this.consume("COMMA")){
+					if(this.doFuncArg()){
+						
+					} else {
+						return false;
+					}
+				}
+				if(true == this.consume("RPAR")){
+					if(true == this.doStmCompound()){
+						return true;
+					}
+				}
+			}
+		}
 		return false;
 	}
 
 	@Override
 	public boolean doFuncArg() {
-		// TODO Auto-generated method stub
+		if(true == this.doTypeBase()){
+			if(true == this.consume("ID")){
+				this.doArrayDecl();
+				return true;
+			}
+		}
 		return false;
 	}
 
@@ -135,15 +196,18 @@ public class SintacticMap implements SintaticMapInterface{
 	}
 
 	@Override
-	public boolean consume() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
 	public void errorPrint() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public boolean consume(String argToFind) {
+		if(argToFind == atomList.get(0).getValue()){
+			atomList.remove(0);
+			return true;
+		} else
+		return false;
 	}
 	
 	
