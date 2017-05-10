@@ -9,12 +9,6 @@ public class SintacticMap implements SintaticMapInterface{
 	public SintacticMap(ArrayList<Atom> arg){
 		atomList=arg;
 	}
-
-	private ArrayList<Atom> atomList;
-	
-	public SintacticMap(ArrayList<Atom> arg){
-		this.atomList = arg;
-	}
 	
 	@Override
 	public boolean doUnit() {
@@ -215,12 +209,7 @@ public class SintacticMap implements SintaticMapInterface{
 		// TODO Auto-generated method stub
 		return false;
 	}
-	exprPrimary: ID ( LPAR ( expr ( COMMA expr )* )? RPAR )?
-	           | CT_INT
-	           | CT_REAL 
-	           | CT_CHAR 
-	           | CT_STRING 
-	           | LPAR expr RPAR ;
+
 	@Override
 	public boolean doExprPrimary() {
 		if(this.consume("ID")){
