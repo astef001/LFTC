@@ -407,13 +407,6 @@ public class SintacticMap implements SintaticMapInterface{
 
 	@Override
 	public boolean doExprPrimary() {
-		if(this.consume("ID")){
-			if()
-			this.consume("LPAR");
-			this.doExpr();
-			while(this.consume("COMMA") && this.doExpr());
-			this.consume("RPAR");
-		}
 		return false;
 	}
 
