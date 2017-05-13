@@ -25,7 +25,7 @@ public class AtomMap {
 		atoms.put(">=", "GREATEREQ");
 		atoms.put("<=", "LESSEQ");
 		atoms.put("!=","NOTEQ");
-		atoms.put("==", "EQUALS");
+		atoms.put("==", "EQUAL");
 		atoms.put("=", "ASSIGN");
 		atoms.put(";", "SEMICOLON");
 		atoms.put("\\(", "LPAR");
@@ -55,7 +55,7 @@ public class AtomMap {
 		
 		ignored.add("[ \n\r\t]+");
 		ignored.add("//[^\n\r\0]*");
-		ignored.add("/\\*([^*]|\\*+[^*/])*\\*/");
+		ignored.add("\\/\\*(.)*\\*\\/");
 	}
 	public String removeIgnored(String el){
 		Iterator<String> ignoredIterator= ignored.iterator();

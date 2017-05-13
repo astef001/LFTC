@@ -9,15 +9,22 @@ import SintacticAnalyzer.SintacticMap;
 
 public class Main {
 	
-	private static String inputFile = "C:\\Users\\Alex\\Desktop\\tests\\8.c";
+	private static String inputFile = "C:\\Users\\Alex\\Desktop\\tests\\";
 	private static AtomGenerator atoms=new AtomGenerator();
 	private static SintacticMap asin;
 	public static void main(String[] args) throws IOException {
-		InputClass test = new InputClass(inputFile);
+		for(int i = 1; i <=9; i++){
+		InputClass test = new InputClass(inputFile+i+".c");
 		ArrayList<String> tmpList = new ArrayList<String>();
 		tmpList = test.getList();
 		atoms.generateAtoms(tmpList);
+		System.out.println(atoms.getAtomsString());
 		asin = new SintacticMap(atoms.getAtoms());
-		//System.out.println(atoms.getAtomsString());
+		asin.doUnit();//{
+			//System.out.println("Compilation succesful");
+		//} else
+			//System.out.println("Something wrong with the compiler");
+		System.out.println();
+		}
 	}
 }

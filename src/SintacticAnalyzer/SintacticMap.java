@@ -41,6 +41,7 @@ public class SintacticMap implements SintaticMapInterface{
 
 	@Override
 	public boolean doDeclVar() {
+
 		if(this.doTypeBase()){
 			if(this.consume("ID")==true){
 				this.doArrayDecl();
@@ -94,7 +95,6 @@ public class SintacticMap implements SintaticMapInterface{
 		}
 		else{
 			if(true == this.consume("VOID")){
-				
 			}
 			else return false;
 		}
@@ -139,6 +139,11 @@ public class SintacticMap implements SintaticMapInterface{
 				if(this.doExpr()){
 					if(this.consume("RPAR")){
 						if(this.doStm()){
+							if(this.consume("ELSE")){
+								if(!this.doStm()){
+									return false;
+								}
+							}
 							return true;
 						}
 					}
@@ -213,13 +218,16 @@ public class SintacticMap implements SintaticMapInterface{
 
 	@Override
 	public boolean doExprAssign() {
+		if(this.doExprOr()){
+			return true;
+		}
 		if(this.doExprUnary()){
 			if(this.consume("ASSIGN")){
-				if(this.doExprOr() || this.doExprAssign()){
+				if(this.doExprAssign()){
 					return true;
 				}
 			}
-		}
+		} 
 		return false;
 	}
 
@@ -257,13 +265,13 @@ public class SintacticMap implements SintaticMapInterface{
 	public boolean doExprAnd1(){
 		if(this.consume("AND")){
 			if(this.doExprEq()){
+				doExprAnd1();
 				return true;
+			}else {
+				return false;
 			}
 		}
-		if(this.doEpsilon()){
-			return true;
-		}
-		return false;
+		return true;
 	}
 	@Override
 	public boolean doExprEq() {
@@ -278,13 +286,17 @@ public class SintacticMap implements SintaticMapInterface{
 	public boolean doExprEq1(){
 		if(this.consume("EQUAL") || this.consume("NOTEQ")){
 			if(this.doExprRel()){
+				this.doExprEq1();
+				return true;
+			}
+		} else {
+			if(this.doExprRel()){
+				this.doExprEq1();
 				return true;
 			}
 		}
-		if(this.doEpsilon()){
-			return true;
-		}
-		return false;
+		
+		return true;
 	}
 
 	@Override
@@ -300,6 +312,7 @@ public class SintacticMap implements SintaticMapInterface{
 	public boolean doExprRel1(){
 		if(this.consume("LESS") || this.consume("LESSEQ") || this.consume("GREATER") || this.consume("GREATEREQ")){
 			if(this.doExprAdd()){
+				this.doExprRel1();
 				return true;
 			}
 		}
@@ -321,6 +334,7 @@ public class SintacticMap implements SintaticMapInterface{
 	public boolean doExprAdd1(){
 		if(this.consume("ADD") || this.consume("SUB")){
 			if(this.doExprMul()){
+				if(this.doExprAdd1())
 				return true;
 			}
 		}
@@ -356,11 +370,14 @@ public class SintacticMap implements SintaticMapInterface{
 		if(this.consume("LPAR")){
 			if(this.doTypeName()){
 				if(this.consume("RPAR")){
-					if(this.doExprUnary() || this.doExprCast()){
+					if(this.doExprCast()){
 						return true;
 					}
 				}
 			}
+		}
+		if(this.doExprUnary()){
+			return true;
 		}
 		return false;
 	}
@@ -368,8 +385,11 @@ public class SintacticMap implements SintaticMapInterface{
 	@Override
 	public boolean doExprUnary() {
 		if(this.consume("SUB") || this.consume("NOT")){
-			if(this.doExprPostifx() || this.doExprUnary())
+			if(this.doExprUnary())
 				return true;
+		}
+		if(this.doExprPostifx()){
+			return true;
 		}
 		return false;
 	}
@@ -445,7 +465,9 @@ public class SintacticMap implements SintaticMapInterface{
 
 	@Override
 	public boolean consume(String argToFind) {
-		if(argToFind == atomList.get(0).getValue()){
+		String tmpString = atomList.get(0).getId();
+		if(argToFind.equals(tmpString)){
+			System.out.print(argToFind+ " ");
 			atomList.remove(0);
 			return true;
 		} else
