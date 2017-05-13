@@ -5,11 +5,9 @@ import java.util.ArrayList;
 import LexicalAnalyzer.Atom;
 
 public class SintacticMap implements SintaticMapInterface{
-
 	private ArrayList<Atom> atomList;
-	
 	public SintacticMap(ArrayList<Atom> arg){
-		this.atomList = arg;
+		atomList=arg;
 	}
 	
 	@Override
@@ -43,13 +41,37 @@ public class SintacticMap implements SintaticMapInterface{
 
 	@Override
 	public boolean doDeclVar() {
+<<<<<<< HEAD
 		// Done by Alex
+=======
+		if(this.doTypeBase()){
+			if(this.consume("ID")==true){
+				this.doArrayDecl();
+				while(this.consume("COMMA")){
+					if(this.consume("ID")){
+						this.doArrayDecl();
+					}else err("missing id after ,");
+				}
+				if(this.consume("SEMICOLON")){
+					return true;
+				}else err
+			}
+		}
+>>>>>>> fa76d946838cfbe084d728d2cc60b2148e67d0e9
 		return false;
 	}
 
 	@Override
 	public boolean doTypeBase() {
+<<<<<<< HEAD
 		// Done by Alex
+=======
+		if(this.consume("INT") || this.consume("DOUBLE") || this.consume("CHAR") || this.consume("STRUCT")){
+			if(this.consume("ID")){
+				return true;
+			}
+		}
+>>>>>>> fa76d946838cfbe084d728d2cc60b2148e67d0e9
 		return false;
 	}
 
@@ -180,18 +202,34 @@ public class SintacticMap implements SintaticMapInterface{
 
 	@Override
 	public boolean doStmCompound() {
+<<<<<<< HEAD
 		// Done by Alex
+=======
+		if(this.consume("LACC")){
+			while(this.doDeclVar() || this.doStm());
+			if(this.consume("RACC")){
+				return true;
+			}
+		}
+>>>>>>> fa76d946838cfbe084d728d2cc60b2148e67d0e9
 		return false;
 	}
 
 	@Override
 	public boolean doExpr() {
+<<<<<<< HEAD
 		// Done by Alex
+=======
+		if(this.doExprAssign()){
+			return true;
+		}
+>>>>>>> fa76d946838cfbe084d728d2cc60b2148e67d0e9
 		return false;
 	}
 
 	@Override
 	public boolean doExprAssign() {
+<<<<<<< HEAD
 		if(this.doExprUnary()){
 			if(this.consume("ASSIGN")){
 				if(this.doExprOr() || this.doExprAssign()){
@@ -199,6 +237,8 @@ public class SintacticMap implements SintaticMapInterface{
 				}
 			}
 		}
+=======
+>>>>>>> fa76d946838cfbe084d728d2cc60b2148e67d0e9
 		return false;
 	}
 
@@ -386,7 +426,17 @@ public class SintacticMap implements SintaticMapInterface{
 
 	@Override
 	public boolean doExprPrimary() {
+<<<<<<< HEAD
 		// Done by Alex
+=======
+		if(this.consume("ID")){
+			if()
+			this.consume("LPAR");
+			this.doExpr();
+			while(this.consume("COMMA") && this.doExpr());
+			this.consume("RPAR");
+		}
+>>>>>>> fa76d946838cfbe084d728d2cc60b2148e67d0e9
 		return false;
 	}
 
