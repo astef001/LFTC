@@ -16,10 +16,14 @@ public class SintacticMap implements SintaticMapInterface{
 	public boolean doUnit() {
 		while(true == this.doDeclStruct() || true == this.doDeclFunc() || true == this.doDeclVar());
 			if(this.consume("END")){
+				System.out.println("Compilation Succes\n");
+				return true;
+			}
+			else{
+				System.out.println("Compilation error\n");
 				return false;
 			}
-		return false;
-	}
+}
 
 	@Override
 	public boolean doDeclStruct() {
@@ -39,12 +43,13 @@ public class SintacticMap implements SintaticMapInterface{
 
 	@Override
 	public boolean doDeclVar() {
-		// TODO Auto-generated method stub
+		// Done by Alex
 		return false;
 	}
 
 	@Override
 	public boolean doTypeBase() {
+		// Done by Alex
 		return false;
 	}
 
@@ -113,85 +118,275 @@ public class SintacticMap implements SintaticMapInterface{
 
 	@Override
 	public boolean doStm() {
-		// TODO Auto-generated method stub
+		if(this.doStmCompound())
+			return true;
+		if(this.consume("IF")){
+			if(this.consume("LPAR")){
+				if(this.doExpr()){
+					if(this.consume("RPAR")){
+						if(this.doStm()){
+							return true;
+						}
+					}
+				}
+			}
+		}
+		if(this.consume("WHILE")){
+			if(this.consume("LPAR")){
+				if(this.doExpr()){
+					if(this.consume("RPAR")){
+						if(this.doStm()){
+							return true;
+						}
+					}
+				}
+			}
+		}
+		if(this.consume("FOR")){
+			if(this.consume("LPAR")){
+				this.doExpr();
+				if(this.consume("SEMICOLON")){
+					this.doExpr();
+					if(this.consume("SEMICOLON")){
+						this.doExpr();
+						if(this.consume("RPAR")){
+							if(this.doStm()){
+								return true;
+							}
+						}
+					}
+				}
+			}
+		}
+		if(this.consume("BREAK")){
+			if(this.consume("SEMICOLON")){
+				return true;
+			}
+		}
+		if(this.consume("RETURN")){
+			this.doExpr();
+			if(this.consume("SEMICOLON")){
+				return true;
+			}
+		}
+		else{
+			this.doExpr();
+			if(this.consume("SEMICOLON")){
+				return true;
+			}
+		}
 		return false;
 	}
 
 	@Override
 	public boolean doStmCompound() {
-		// TODO Auto-generated method stub
+		// Done by Alex
 		return false;
 	}
 
 	@Override
 	public boolean doExpr() {
-		// TODO Auto-generated method stub
+		// Done by Alex
 		return false;
 	}
 
 	@Override
 	public boolean doExprAssign() {
-		// TODO Auto-generated method stub
+		if(this.doExprUnary()){
+			if(this.consume("ASSIGN")){
+				if(this.doExprOr() || this.doExprAssign()){
+					return true;
+				}
+			}
+		}
 		return false;
 	}
 
 	@Override
 	public boolean doExprOr() {
-		// TODO Auto-generated method stub
+		if(this.doExprAnd()){
+			if(this.doExprOr1()){
+				return true;
+			}
+		}
 		return false;
 	}
 
+	public boolean doExprOr1(){
+		if(this.consume("OR")){
+			if(this.doExprAnd()){
+				return true;
+			}
+		}
+		if(this.doEpsilon()){
+			return true;
+		}
+		return false;
+	}
 	@Override
 	public boolean doExprAnd() {
-		// TODO Auto-generated method stub
+		if(this.doExprEq()){
+			if(this.doExprAnd1()){
+				return true;
+			}
+		}
 		return false;
 	}
-
+	
+	public boolean doExprAnd1(){
+		if(this.consume("AND")){
+			if(this.doExprEq()){
+				return true;
+			}
+		}
+		if(this.doEpsilon()){
+			return true;
+		}
+		return false;
+	}
 	@Override
 	public boolean doExprEq() {
-		// TODO Auto-generated method stub
+		if(this.doExprRel()){
+			if(this.doExprEq1()){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean doExprEq1(){
+		if(this.consume("EQUAL") || this.consume("NOTEQ")){
+			if(this.doExprRel()){
+				return true;
+			}
+		}
+		if(this.doEpsilon()){
+			return true;
+		}
 		return false;
 	}
 
 	@Override
 	public boolean doExprRel() {
-		// TODO Auto-generated method stub
+		if(this.doExprAdd()){
+			if(this.doExprRel1()){
+				return true;
+			}
+		}
 		return false;
 	}
-
+	
+	public boolean doExprRel1(){
+		if(this.consume("LESS") || this.consume("LESSEQ") || this.consume("GREATER") || this.consume("GREATEREQ")){
+			if(this.doExprAdd()){
+				return true;
+			}
+		}
+		if(this.doEpsilon()){
+			return true;
+		}
+		return false;
+	}
 	@Override
 	public boolean doExprAdd() {
-		// TODO Auto-generated method stub
+		if(this.doExprMul()){
+			if(this.doExprAdd1()){
+				return true;
+			}
+		}
 		return false;
 	}
 
+	public boolean doExprAdd1(){
+		if(this.consume("ADD") || this.consume("SUB")){
+			if(this.doExprMul()){
+				return true;
+			}
+		}
+		if(this.doEpsilon()){
+			return true;
+		}
+		return false;
+	}
 	@Override
 	public boolean doExprMul() {
-		// TODO Auto-generated method stub
+		if(this.doExprCast()){
+			if(this.doExprMul1()){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean doExprMul1(){
+		if(this.consume("MUL") || this.consume("DIV")){
+			if(this.doExprMul1()){
+				return true;
+			}
+		}
+		if(this.doEpsilon()){
+			return true;
+		}
 		return false;
 	}
 
 	@Override
 	public boolean doExprCast() {
-		// TODO Auto-generated method stub
+		if(this.consume("LPAR")){
+			if(this.doTypeName()){
+				if(this.consume("RPAR")){
+					if(this.doExprUnary() || this.doExprCast()){
+						return true;
+					}
+				}
+			}
+		}
 		return false;
 	}
 
 	@Override
 	public boolean doExprUnary() {
-		// TODO Auto-generated method stub
+		if(this.consume("SUB") || this.consume("NOT")){
+			if(this.doExprPostifx() || this.doExprUnary())
+				return true;
+		}
 		return false;
 	}
 
 	@Override
 	public boolean doExprPostifx() {
-		// TODO Auto-generated method stub
+		if(this.doExprPrimary()){
+			if(this.doExprPostfix1()){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean doExprPostfix1(){
+		if(this.consume("LBRACKET")){
+			if(this.doExpr()){
+				if(this.consume("RBRACKET")){
+					if(this.doExprPostfix1()){
+						return true;
+					}
+				}
+			}
+		}
+		if(this.consume("DOT")){
+			if(this.consume("ID")){
+				return true;
+			}
+		}
+		if(this.doEpsilon()){
+			return true;
+		}
 		return false;
 	}
 
 	@Override
 	public boolean doExprPrimary() {
-		// TODO Auto-generated method stub
+		// Done by Alex
 		return false;
 	}
 
@@ -210,5 +405,7 @@ public class SintacticMap implements SintaticMapInterface{
 		return false;
 	}
 	
-	
+	public boolean doEpsilon(){
+		return true;
+	}
 }
