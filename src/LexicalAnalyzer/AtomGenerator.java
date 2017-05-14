@@ -1,17 +1,22 @@
 package LexicalAnalyzer;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class AtomGenerator {
-	
+	private final String[] tmp={"if[^a-zA-Z0-9_]","for[^a-zA-Z0-9_]","while[^a-zA-Z0-9_]"};
+	private final ArrayList<String> exceptionList= new ArrayList<String>();
 	private final AtomMap atomMap = new AtomMap();
 	private Set<String> mapKeys=atomMap.getKeySet();
 	private ArrayList<Atom> generatedAtoms;
 	public AtomGenerator(){
+		exceptionList.add("if[^a-zA-Z0-9_]");
+		exceptionList.add("for[^a-zA-Z0-9_]");
+		exceptionList.add("while[^a-zA-Z0-9_]");
 	}
 	
 	public ArrayList<Atom> getAtoms(){
@@ -50,14 +55,17 @@ public class AtomGenerator {
 			while(currentEl.length()>0){
 				currentEl=atomMap.removeIgnored(currentEl);
 				mapIterator = mapKeys.iterator();
-				while(mapIterator.hasNext()){
+				while(mapIterator.hasNext() && currentEl!=""){
 					regex=mapIterator.next();
 					p=Pattern.compile("^"+regex);
 					m=p.matcher(currentEl);
 					if(m.find()){
 						tempString=currentEl.substring(0, m.end());
 						generatedAtoms.add(new Atom(tempString,atomMap.getAtomId(regex), line));	
-						currentEl = currentEl.substring(m.end());
+						if(exceptionList.contains(regex))
+							currentEl = currentEl.substring(m.end()-1);
+						else
+							currentEl = currentEl.substring(m.end());
 						break;
 					}
 				}

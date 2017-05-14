@@ -25,7 +25,7 @@ public class AtomMap {
 		atoms.put(">=", "GREATEREQ");
 		atoms.put("<=", "LESSEQ");
 		atoms.put("!=","NOTEQ");
-		atoms.put("==", "EQUALS");
+		atoms.put("==", "EQUAL");
 		atoms.put("=", "ASSIGN");
 		atoms.put(";", "SEMICOLON");
 		atoms.put("\\(", "LPAR");
@@ -47,15 +47,15 @@ public class AtomMap {
 		atoms.put(">","GREATER") ;
 		atoms.put("[ \t]", " ");
 		/* escaped the DOT (.) because it was considered any character before (0x2 was considered a real) */
-		atoms.put("[0-9]+(\\.[0-9]+((e|E)(-|\\+)?[0-9]+)?|(\\.[0-9]+)?(e|E)(-|\\+)?[0-9]+)", "CT_REAL");
-		atoms.put("(0x[0-9a-fA-F]+)|([1-9][0-9]*|0[0-7]*)", "CT_INT");
+		atoms.put("([0-9]+(\\.[0-9]+((e|E)(-|\\+)?[0-9]+)?|(\\.[0-9]+)?(e|E)(-|\\+)?[0-9]+))", "CT_REAL");
+		atoms.put("((0x[0-9a-fA-F]+)|([1-9][0-9]*|0[0-7]*))", "CT_INT");
 		atoms.put("[\"]([abfnrtv'?\\\\\"\\\\0]|[^\"\\\\])*[\"]", "CT_STRING");		
 		atoms.put("['](\\\\[abfnrtv'?\\\\\"\\\\0]|[^'\\\\])[']", "CT_CHAR");
 		atoms.put("[a-zA-Z_][a-zA-Z0-9_]*","ID");
 		
 		ignored.add("[ \n\r\t]+");
 		ignored.add("//[^\n\r\0]*");
-		ignored.add("/\\*([^*]|\\*+[^*/])*\\*/");
+		ignored.add("\\/\\*(.)*\\*\\/");
 	}
 	public String removeIgnored(String el){
 		Iterator<String> ignoredIterator= ignored.iterator();
