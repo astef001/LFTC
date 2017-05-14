@@ -215,11 +215,13 @@ public class SintacticMap implements SintaticMapInterface{
 	public boolean doExprAssign() {
 		if(this.doExprUnary()){
 			if(this.consume("ASSIGN")){
-				if(this.doExprOr() || this.doExprAssign()){
+				if(this.doExprAssign()){
 					return true;
 				}
 			}
 		}
+		if(this.doExprOr())
+			return true;
 		return false;
 	}
 
