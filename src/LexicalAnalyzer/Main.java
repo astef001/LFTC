@@ -13,7 +13,7 @@ public class Main {
 	private static AtomGenerator atoms=new AtomGenerator();
 	private static SintacticMap asin;
 	public static void main(String[] args) throws IOException {
-		for(int i = 1; i <=9; i++){
+		for(int i = 1; i <= 9; i++){
 		InputClass test = new InputClass(inputFile+i+".c");
 		ArrayList<String> tmpList = new ArrayList<String>();
 		tmpList = test.getList();

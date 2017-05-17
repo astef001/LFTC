@@ -6,6 +6,7 @@ import LexicalAnalyzer.Atom;
 
 public class SintacticMap implements SintaticMapInterface{
 	private ArrayList<Atom> atomList;
+	private int currentPosition = 0;
 	public SintacticMap(ArrayList<Atom> arg){
 		atomList=arg;
 	}
@@ -25,6 +26,7 @@ public class SintacticMap implements SintaticMapInterface{
 
 	@Override
 	public boolean doDeclStruct() {
+		int tmp_position = this.currentPosition;
 		if(true == this.consume("STRUCT")){
 			if(true == this.consume("ID")){
 				if(true == this.consume("LACC")){
@@ -36,12 +38,13 @@ public class SintacticMap implements SintaticMapInterface{
 					}
 			}
 		}
+	this.currentPosition = tmp_position;	
 	return false;
 }
 
 	@Override
 	public boolean doDeclVar() {
-
+		int tmp_position = this.currentPosition;
 		if(this.doTypeBase()){
 			if(this.consume("ID")==true){
 				this.doArrayDecl();
@@ -55,48 +58,62 @@ public class SintacticMap implements SintaticMapInterface{
 				}
 			}
 		}
+		this.currentPosition = tmp_position;
 		return false;
 	}
 
 	@Override
 	public boolean doTypeBase() {
-		if(this.consume("INT") || this.consume("DOUBLE") || this.consume("CHAR") || this.consume("STRUCT")){
+		int tmp_position = this.currentPosition;
+		if(this.consume("INT") || this.consume("DOUBLE") || this.consume("CHAR")){
+				return true;
+		}
+		if(this.consume("STRUCT")){
 			if(this.consume("ID")){
 				return true;
 			}
 		}
+		this.currentPosition = tmp_position;
 		return false;
 	}
 
 	@Override
 	public boolean doArrayDecl() {
+		int tmp_position = this.currentPosition;
 		if(true == this.consume("LBRACKET")){
 			this.doExpr();
 				if(true == this.consume("RBRACKET")){
 					return true;
 				}
 		}
+		this.currentPosition = tmp_position;
 		return false;
 	}
 
 	@Override
 	public boolean doTypeName() {
+		int tmp_position = this.currentPosition;
 		if(this.doTypeBase() == true){
 			this.doArrayDecl();
 				return true;
 		}
+		this.currentPosition = tmp_position;
 		return false;
 	}
 
 	@Override
 	public boolean doDeclFunc() {
+		int tmp_position = this.currentPosition;
 		if(true == this.doTypeBase()){
 			this.consume("MUL");
 		}
 		else{
 			if(true == this.consume("VOID")){
 			}
-			else return false;
+			else{
+				this.currentPosition = tmp_position;
+				return false;
+			}
 		}
 		
 		if(true == this.consume("ID")){
@@ -106,6 +123,7 @@ public class SintacticMap implements SintaticMapInterface{
 					if(this.doFuncArg()){
 						
 					} else {
+						this.currentPosition = tmp_position;
 						return false;
 					}
 				}
@@ -116,17 +134,20 @@ public class SintacticMap implements SintaticMapInterface{
 				}
 			}
 		}
+		this.currentPosition = tmp_position;
 		return false;
 	}
 
 	@Override
 	public boolean doFuncArg() {
+		int tmp_position = this.currentPosition;
 		if(true == this.doTypeBase()){
 			if(true == this.consume("ID")){
 				this.doArrayDecl();
 				return true;
 			}
 		}
+		this.currentPosition = tmp_position;
 		return false;
 	}
 
@@ -222,13 +243,18 @@ public class SintacticMap implements SintaticMapInterface{
 			if(this.consume("ASSIGN")){
 				if(this.doExprAssign()){
 					return true;
+				} else {
+					return false;
+					} 
 				}
+			else{
+				//to add
 			}
 		}
-		if(this.doExprOr())
-			return true;
+			if(this.doExprOr()){
+				return true;
+			}
 		return false;
-
 	}
 
 	@Override
@@ -384,11 +410,12 @@ public class SintacticMap implements SintaticMapInterface{
 
 	@Override
 	public boolean doExprUnary() {
-		if(this.consume("SUB") || this.consume("NOT")){
-			if(this.doExprUnary())
+		if(this.consume("SUB") || this.consume("NOT") ){
+			if(this.doExprUnary()){
 				return true;
+			} else return false;
 		}
-		if(this.doExprPostifx()){
+			if(this.doExprPostifx()){
 			return true;
 		}
 		return false;
@@ -397,9 +424,9 @@ public class SintacticMap implements SintaticMapInterface{
 	@Override
 	public boolean doExprPostifx() {
 		if(this.doExprPrimary()){
-			if(this.doExprPostfix1()){
-				return true;
-			}
+				if(this.doExprPostfix1()){
+					return true;
+				}
 		}
 		return false;
 	}
@@ -416,7 +443,9 @@ public class SintacticMap implements SintaticMapInterface{
 		}
 		if(this.consume("DOT")){
 			if(this.consume("ID")){
-				return true;
+				if(this.doExprPostfix1()){
+					return true;					
+				}
 			}
 		}
 		if(this.doEpsilon()){
@@ -466,10 +495,10 @@ public class SintacticMap implements SintaticMapInterface{
 
 	@Override
 	public boolean consume(String argToFind) {
-		String tmpString = atomList.get(0).getId();
+		String tmpString = atomList.get(this.currentPosition).getId();
 		if(argToFind.equals(tmpString)){
 			System.out.print(argToFind+ " ");
-			atomList.remove(0);
+			this.currentPosition++;
 			return true;
 		} else
 		return false;
