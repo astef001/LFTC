@@ -1,27 +1,33 @@
 package SintacticAnalyzer;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import LexicalAnalyzer.Atom;
 
 public class SintacticMap implements SintaticMapInterface{
 	private ArrayList<Atom> atomList;
 	private int currentPosition = 0;
-	private int maxStep=-1;
-	private String error= new String();
+	private ArrayList<Symbol> symbolList;
+	
+	private String symName = null;
+	private String symType = null;
+	private boolean symArray = false;
+	private int depth = 0;
 	public SintacticMap(ArrayList<Atom> arg){
 		atomList=arg;
+		this.symbolList = new ArrayList<Symbol>();
 	}
 	
 	@Override
 	public boolean doUnit() {
 		while(true == this.doDeclStruct() || true == this.doDeclFunc() || true == this.doDeclVar());
 			if(this.consume("END")){
-				System.out.println("\nCompilation Succes\n");
+				System.out.println("\nCompilation Success\n");
 				return true;
 			}
 			else{
-				System.out.println(this.error);
+				System.out.println("\nCompilation Fail\n");
 				return false;
 			}
 }
@@ -46,13 +52,26 @@ public class SintacticMap implements SintaticMapInterface{
 
 	@Override
 	public boolean doDeclVar() {
+		symName = null;
+		symType = null;
+		symArray = false;
 		int tmp_position = this.currentPosition;
 		if(this.doTypeBase()){
 			if(this.consume("ID")==true){
+				symName = atomList.get(this.currentPosition - 1).getValue();
 				this.doArrayDecl();
+				if(!(this.addSymbol())){
+					this.currentPosition = tmp_position;
+					return false;
+				}
 				while(this.consume("COMMA")){
 					if(this.consume("ID")){
+						symName = atomList.get(this.currentPosition - 1).getValue();
 						this.doArrayDecl();
+						if(!(this.addSymbol())){
+							this.currentPosition = tmp_position;
+							return false;
+						}
 					}
 				}
 				if(this.consume("SEMICOLON")){
@@ -67,11 +86,21 @@ public class SintacticMap implements SintaticMapInterface{
 	@Override
 	public boolean doTypeBase() {
 		int tmp_position = this.currentPosition;
-		if(this.consume("INT") || this.consume("DOUBLE") || this.consume("CHAR")){
-				return true;
+		if(this.consume("INT")){
+			this.symType = "TB_INT";
+			return true;
+			}
+		if(this.consume("DOUBLE")){
+			this.symType = "TB_DOUBLE";
+			return true;
+		}
+		if(this.consume("CHAR")){
+			this.symType = "TB_CHAR";	
+			return true;
 		}
 		if(this.consume("STRUCT")){
 			if(this.consume("ID")){
+				this.symType = "TB_STRUCT";
 				return true;
 			}
 		}
@@ -85,6 +114,7 @@ public class SintacticMap implements SintaticMapInterface{
 		if(true == this.consume("LBRACKET")){
 			this.doExpr();
 				if(true == this.consume("RBRACKET")){
+					this.symArray = true;
 					return true;
 				}
 		}
@@ -548,19 +578,42 @@ public class SintacticMap implements SintaticMapInterface{
 		if(argToFind.equals(tmpString)){
 			System.out.print(argToFind+ " ");
 			this.currentPosition++;
+			if(argToFind == "LACC"){
+				this.depth++;
+			}
+			if(argToFind == "RACC"){
+				this.removeSymbols(depth);
+				this.depth--;
+			}
 			return true;
 		} else
 		{
-			if(!argToFind.equals("END") && this.maxStep<this.currentPosition){
+			/*if(!argToFind.equals("END") && this.maxStep<this.currentPosition){
 				this.maxStep=this.currentPosition;
 				error = "Error at line " + atomList.get(this.currentPosition).getLine() + ": Expected "+argToFind+" Found: "+ tmpString;
 				System.out.println(error);
-			}
+			}*/
 			return false;
 		}
 	}
 	
 	public boolean doEpsilon(){
 		return true;
+	}
+	
+	private boolean addSymbol(){
+		Iterator<Symbol> symIterator = this.symbolList.iterator();
+		while(symIterator.hasNext()){
+			if(symIterator.next().getName().equals( this.symName )){
+				System.out.println("\nDuplicate");
+				return false;
+			}
+		}
+		this.symbolList.add(new Symbol(this.symName, this.symType, this.symArray, depth));
+		return true;
+	}
+	
+	private void removeSymbols(int depthArg){
+		this.symbolList.removeIf((Symbol arg) -> {return (arg.getDepth() == this.depth);});
 	}
 }
