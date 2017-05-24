@@ -7,6 +7,8 @@ import LexicalAnalyzer.Atom;
 public class SintacticMap implements SintaticMapInterface{
 	private ArrayList<Atom> atomList;
 	private int currentPosition = 0;
+	private int maxStep=-1;
+	private String error= new String();
 	public SintacticMap(ArrayList<Atom> arg){
 		atomList=arg;
 	}
@@ -19,7 +21,7 @@ public class SintacticMap implements SintaticMapInterface{
 				return true;
 			}
 			else{
-				System.out.println("\nCompilation error\n");
+				System.out.println(this.error);
 				return false;
 			}
 }
@@ -153,6 +155,7 @@ public class SintacticMap implements SintaticMapInterface{
 
 	@Override
 	public boolean doStm() {
+		int tmp_position = this.currentPosition;
 		if(this.doStmCompound())
 			return true;
 		if(this.consume("IF")){
@@ -215,30 +218,38 @@ public class SintacticMap implements SintaticMapInterface{
 				return true;
 			}
 		}
+		this.currentPosition = tmp_position;
 		return false;
 	}
 
 	@Override
 	public boolean doStmCompound() {
+		int tmp_position = currentPosition;
 		if(this.consume("LACC")){
 			while(this.doDeclVar() || this.doStm());
 			if(this.consume("RACC")){
 				return true;
 			}
 		}
+		this.currentPosition = tmp_position;
 		return false;
+		
 	}
 
 	@Override
 	public boolean doExpr() {
+		int tmp_position = currentPosition;
 		if(this.doExprAssign()){
 			return true;
 		}
+		this.currentPosition = tmp_position;
 		return false;
+		
 	}
 
 	@Override
 	public boolean doExprAssign() {
+		int tmp_position = currentPosition;
 		if(this.doExprUnary()){
 			if(this.consume("ASSIGN")){
 				if(this.doExprAssign()){
@@ -251,28 +262,34 @@ public class SintacticMap implements SintaticMapInterface{
 				//to add
 			}
 		}
+		this.currentPosition = tmp_position;
 			if(this.doExprOr()){
 				return true;
 			}
+			this.currentPosition = tmp_position;
 		return false;
 	}
 
 	@Override
 	public boolean doExprOr() {
+		int tmp_position = currentPosition;
 		if(this.doExprAnd()){
 			if(this.doExprOr1()){
 				return true;
 			}
 		}
+		this.currentPosition = tmp_position;
 		return false;
 	}
 
 	public boolean doExprOr1(){
+		int tmp_position = currentPosition;
 		if(this.consume("OR")){
 			if(this.doExprAnd()){
 				return true;
 			}
 		}
+		this.currentPosition = tmp_position;
 		if(this.doEpsilon()){
 			return true;
 		}
@@ -280,20 +297,24 @@ public class SintacticMap implements SintaticMapInterface{
 	}
 	@Override
 	public boolean doExprAnd() {
+		int tmp_position = currentPosition;
 		if(this.doExprEq()){
 			if(this.doExprAnd1()){
 				return true;
 			}
 		}
+		this.currentPosition = tmp_position;
 		return false;
 	}
 	
 	public boolean doExprAnd1(){
+		int tmp_position = currentPosition;
 		if(this.consume("AND")){
 			if(this.doExprEq()){
 				doExprAnd1();
 				return true;
 			}else {
+				this.currentPosition = tmp_position;
 				return false;
 			}
 		}
@@ -301,11 +322,13 @@ public class SintacticMap implements SintaticMapInterface{
 	}
 	@Override
 	public boolean doExprEq() {
+		int tmp_position = currentPosition;
 		if(this.doExprRel()){
 			if(this.doExprEq1()){
 				return true;
 			}
 		}
+		this.currentPosition = tmp_position;
 		return false;
 	}
 	
@@ -327,15 +350,18 @@ public class SintacticMap implements SintaticMapInterface{
 
 	@Override
 	public boolean doExprRel() {
+		int tmp_position = currentPosition;
 		if(this.doExprAdd()){
 			if(this.doExprRel1()){
 				return true;
 			}
 		}
+		this.currentPosition = tmp_position;
 		return false;
 	}
 	
 	public boolean doExprRel1(){
+		int tmp_position = currentPosition;
 		if(this.consume("LESS") || this.consume("LESSEQ") || this.consume("GREATER") || this.consume("GREATEREQ")){
 			if(this.doExprAdd()){
 				this.doExprRel1();
@@ -345,19 +371,23 @@ public class SintacticMap implements SintaticMapInterface{
 		if(this.doEpsilon()){
 			return true;
 		}
+		this.currentPosition = tmp_position;
 		return false;
 	}
 	@Override
 	public boolean doExprAdd() {
+		int tmp_position = currentPosition;
 		if(this.doExprMul()){
 			if(this.doExprAdd1()){
 				return true;
 			}
 		}
+		this.currentPosition = tmp_position;
 		return false;
 	}
 
 	public boolean doExprAdd1(){
+		int tmp_position = currentPosition;
 		if(this.consume("ADD") || this.consume("SUB")){
 			if(this.doExprMul()){
 				if(this.doExprAdd1())
@@ -367,19 +397,23 @@ public class SintacticMap implements SintaticMapInterface{
 		if(this.doEpsilon()){
 			return true;
 		}
+		this.currentPosition = tmp_position;
 		return false;
 	}
 	@Override
 	public boolean doExprMul() {
+		int tmp_position = currentPosition;
 		if(this.doExprCast()){
 			if(this.doExprMul1()){
 				return true;
 			}
 		}
+		this.currentPosition = tmp_position;
 		return false;
 	}
 	
 	public boolean doExprMul1(){
+		int tmp_position = currentPosition;
 		if(this.consume("MUL") || this.consume("DIV")){
 			if(this.doExprMul1()){
 				return true;
@@ -388,11 +422,13 @@ public class SintacticMap implements SintaticMapInterface{
 		if(this.doEpsilon()){
 			return true;
 		}
+		this.currentPosition = tmp_position;
 		return false;
 	}
 
 	@Override
 	public boolean doExprCast() {
+		int tmp_position = currentPosition;
 		if(this.consume("LPAR")){
 			if(this.doTypeName()){
 				if(this.consume("RPAR")){
@@ -402,36 +438,44 @@ public class SintacticMap implements SintaticMapInterface{
 				}
 			}
 		}
+		this.currentPosition = tmp_position;
 		if(this.doExprUnary()){
 			return true;
 		}
+		this.currentPosition = tmp_position;
 		return false;
 	}
 
 	@Override
 	public boolean doExprUnary() {
+		int tmp_position = currentPosition;
 		if(this.consume("SUB") || this.consume("NOT") ){
 			if(this.doExprUnary()){
 				return true;
-			} else return false;
+			}
 		}
+		this.currentPosition = tmp_position;
 			if(this.doExprPostifx()){
 			return true;
 		}
+		this.currentPosition = tmp_position;
 		return false;
 	}
 
 	@Override
 	public boolean doExprPostifx() {
+		int tmp_position = currentPosition;
 		if(this.doExprPrimary()){
 				if(this.doExprPostfix1()){
 					return true;
 				}
 		}
+		this.currentPosition = tmp_position;
 		return false;
 	}
 	
 	public boolean doExprPostfix1(){
+		int tmp_position = currentPosition;
 		if(this.consume("LBRACKET")){
 			if(this.doExpr()){
 				if(this.consume("RBRACKET")){
@@ -441,6 +485,7 @@ public class SintacticMap implements SintaticMapInterface{
 				}
 			}
 		}
+		this.currentPosition = tmp_position;
 		if(this.consume("DOT")){
 			if(this.consume("ID")){
 				if(this.doExprPostfix1()){
@@ -456,15 +501,18 @@ public class SintacticMap implements SintaticMapInterface{
 
 	@Override
 	public boolean doExprPrimary() {
+		int tmp_position = currentPosition;
 		if(this.consume("ID")){
 			if(this.consume("LPAR")){
 			this.doExpr(); 
 			while(this.consume("COMMA")){
 				if(!this.doExpr()){
+					this.currentPosition = tmp_position;
 					return false;
 				}
 			}
 				if(!this.consume("RPAR")){
+					this.currentPosition = tmp_position;
 					return false;
 				}
 			}
@@ -484,6 +532,7 @@ public class SintacticMap implements SintaticMapInterface{
 				}
 			}
 		}
+		this.currentPosition = tmp_position;
 		return false;
 	}
 
@@ -501,7 +550,14 @@ public class SintacticMap implements SintaticMapInterface{
 			this.currentPosition++;
 			return true;
 		} else
-		return false;
+		{
+			if(!argToFind.equals("END") && this.maxStep<this.currentPosition){
+				this.maxStep=this.currentPosition;
+				error = "Error at line " + atomList.get(this.currentPosition).getLine() + ": Expected "+argToFind+" Found: "+ tmpString;
+				System.out.println(error);
+			}
+			return false;
+		}
 	}
 	
 	public boolean doEpsilon(){

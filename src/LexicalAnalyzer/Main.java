@@ -9,7 +9,7 @@ import SintacticAnalyzer.SintacticMap;
 
 public class Main {
 	
-	private static String inputFile = "C:\\Users\\Cata\\Desktop\\tests\\";
+	private static String inputFile = "C:\\Users\\Alex\\Desktop\\tests\\";
 	private static AtomGenerator atoms=new AtomGenerator();
 	private static SintacticMap asin;
 	public static void main(String[] args) throws IOException {
