@@ -14,6 +14,8 @@ public class SintacticMap implements SintaticMapInterface{
 	private String symType = null;
 	private boolean symArray = false;
 	private int depth = 0;
+	private boolean declaratin = false;
+	private int tmpIndex = -1;
 	public SintacticMap(ArrayList<Atom> arg){
 		atomList=arg;
 		this.symbolList = new ArrayList<Symbol>();
@@ -35,12 +37,22 @@ public class SintacticMap implements SintaticMapInterface{
 	@Override
 	public boolean doDeclStruct() {
 		int tmp_position = this.currentPosition;
+		symName = null;
+		symType = null;
+		symArray = false;
 		if(true == this.consume("STRUCT")){
 			if(true == this.consume("ID")){
+				int tmpPosStruct = this.currentPosition - 1;
 				if(true == this.consume("LACC")){
 					while(this.doDeclVar() == true);
 						if(true == this.consume("RACC")){
 							if(true == this.consume("SEMICOLON"))
+								symName = atomList.get(tmpPosStruct).getValue();
+								symType = "TB_STRUCT";
+								symArray = false;
+								if(!this.addSymbol()){
+									return false;
+								}
 								return true;
 						}
 					}
@@ -55,6 +67,7 @@ public class SintacticMap implements SintaticMapInterface{
 		symName = null;
 		symType = null;
 		symArray = false;
+		this.declaratin = true;
 		int tmp_position = this.currentPosition;
 		if(this.doTypeBase()){
 			if(this.consume("ID")==true){
@@ -62,6 +75,7 @@ public class SintacticMap implements SintaticMapInterface{
 				this.doArrayDecl();
 				if(!(this.addSymbol())){
 					this.currentPosition = tmp_position;
+					this.declaratin = false;
 					return false;
 				}
 				while(this.consume("COMMA")){
@@ -70,16 +84,19 @@ public class SintacticMap implements SintaticMapInterface{
 						this.doArrayDecl();
 						if(!(this.addSymbol())){
 							this.currentPosition = tmp_position;
+							this.declaratin = false;
 							return false;
 						}
 					}
 				}
 				if(this.consume("SEMICOLON")){
+					this.declaratin = false;
 					return true;
 				}
 			}
 		}
 		this.currentPosition = tmp_position;
+		this.declaratin = false;
 		return false;
 	}
 
@@ -135,20 +152,27 @@ public class SintacticMap implements SintaticMapInterface{
 
 	@Override
 	public boolean doDeclFunc() {
+		symName = null;
+		symType = null;
+		symArray = false;
+		this.declaratin = true;
 		int tmp_position = this.currentPosition;
 		if(true == this.doTypeBase()){
 			this.consume("MUL");
 		}
 		else{
 			if(true == this.consume("VOID")){
+				this.symType = "TB_VOID";
 			}
 			else{
 				this.currentPosition = tmp_position;
+				this.declaratin = false;
 				return false;
 			}
 		}
 		
 		if(true == this.consume("ID")){
+			symName = atomList.get(this.currentPosition - 1).getValue();
 			if(true == this.consume("LPAR")){
 				this.doFuncArg();
 				while(this.consume("COMMA")){
@@ -156,17 +180,24 @@ public class SintacticMap implements SintaticMapInterface{
 						
 					} else {
 						this.currentPosition = tmp_position;
+						this.declaratin = false;
 						return false;
 					}
 				}
 				if(true == this.consume("RPAR")){
+					if(!this.addSymbol()){
+						this.declaratin = false;
+						return false;
+					}
 					if(true == this.doStmCompound()){
+						this.declaratin = false;
 						return true;
 					}
 				}
 			}
 		}
 		this.currentPosition = tmp_position;
+		this.declaratin = false;
 		return false;
 	}
 
@@ -585,6 +616,9 @@ public class SintacticMap implements SintaticMapInterface{
 				this.removeSymbols(depth);
 				this.depth--;
 			}
+			if(argToFind == "ID" && !this.declaratin && !this.isPresent(atomList.get(this.currentPosition - 1).getValue())){
+				return false;
+			}
 			return true;
 		} else
 		{
@@ -604,16 +638,29 @@ public class SintacticMap implements SintaticMapInterface{
 	private boolean addSymbol(){
 		Iterator<Symbol> symIterator = this.symbolList.iterator();
 		while(symIterator.hasNext()){
-			if(symIterator.next().getName().equals( this.symName )){
-				System.out.println("\nDuplicate");
+			Symbol tmpSym = symIterator.next();
+			if(tmpSym.getName().equals( this.symName ) && this.depth == tmpSym.getDepth()){
+				System.out.println("\nDuplicate " + this.symName);
 				return false;
 			}
 		}
-		this.symbolList.add(new Symbol(this.symName, this.symType, this.symArray, depth));
+		this.symbolList.add(new Symbol(this.symName, this.symType, this.symArray, this.depth));
+		this.tmpIndex++;
 		return true;
 	}
 	
 	private void removeSymbols(int depthArg){
 		this.symbolList.removeIf((Symbol arg) -> {return (arg.getDepth() == this.depth);});
+	}
+	
+	private boolean isPresent(String argName){
+		Iterator<Symbol> symIterator = this.symbolList.iterator();
+		while(symIterator.hasNext()){
+			if(symIterator.next().getName().equals( argName )){
+				return true;
+			}
+		}
+		System.out.println("\nSymbol " + argName + " not declared");
+		return false;
 	}
 }
